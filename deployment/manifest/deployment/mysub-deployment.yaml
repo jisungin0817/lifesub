@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysub-deployment
+  namespace: dg0405-lifesub-ns
+  labels:
+    app: mysub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysub
+  template:
+    metadata:
+      labels:
+        app: mysub
+    spec:
+      imagePullSecrets:
+      - name: acr-secret
+      containers:
+      - name: mysub
+        image: acrdigitalgarage01.azurecr.io/dg0405/mysub:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+          name: http
+        resources:
+          requests:
+            cpu: 256m
+            memory: 256Mi
+          limits:
+            cpu: 1024m
+            memory: 1024Mi
+        envFrom:
+        - configMapRef:
+            name: lifesub-common-config
+        - configMapRef:
+            name: mysub-config
+        - secretRef:
+            name: lifesub-common-secret
+        - secretRef:
+            name: mysub-secret
